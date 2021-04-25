@@ -1,12 +1,12 @@
 resource "aws_security_group" "player" {
-  name = "player_instance"
+  name   = "player_instance"
   vpc_id = aws_vpc.vpc.id
 
   ingress {
     description = "HTTP"
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = [
       "0.0.0.0/0"
     ]
@@ -14,9 +14,9 @@ resource "aws_security_group" "player" {
 
   ingress {
     description = "SSH"
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = [
       "0.0.0.0/0"
     ]
@@ -24,8 +24,8 @@ resource "aws_security_group" "player" {
 
   egress {
     from_port = 0
-    to_port = 0
-    protocol = "-1"
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = [
       "0.0.0.0/0"
     ]
@@ -35,7 +35,7 @@ resource "aws_security_group" "player" {
 resource "aws_spot_instance_request" "player" {
   for_each = local.players
 
-  ami = "ami-0d00b2a9a38084503"
+  ami           = "ami-0d00b2a9a38084503"
   instance_type = "c5.xlarge"
 
   subnet_id = aws_subnet.player_subnet.id
