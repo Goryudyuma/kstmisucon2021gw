@@ -32,7 +32,7 @@ jobs:
 
     - name: terraform destroy
       id: destroy
-      run: terraform destroy -refresh=false -auto-approve
+      run: terraform destroy -refresh=false -no-color -auto-approve
       env:
         GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
 
