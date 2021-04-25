@@ -48,7 +48,7 @@ resource "aws_spot_instance_request" "player" {
 #!/bin/bash
 mkdir /home/ishocon/.ssh
 curl https://github.com/${each.value}.keys > /home/ishocon/.ssh/authorized_keys
-curl https://github.com/Goryudyuma.keys > /home/ishocon/.ssh/authorized_keys
+curl https://github.com/Goryudyuma.keys >> /home/ishocon/.ssh/authorized_keys
 chown -R ishocon:ishocon /home/ishocon/.ssh
 EOF
 
