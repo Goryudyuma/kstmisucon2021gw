@@ -46,9 +46,11 @@ jobs:
           ## [${{ github.workflow }} #${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           <details>
           <summary>result</summary>
+
           ```hcl
           ${{ steps.apply.outputs.stdout }}
           ${{ steps.apply.outputs.stderr }}
           ```
+
           </details>
       if: always()
