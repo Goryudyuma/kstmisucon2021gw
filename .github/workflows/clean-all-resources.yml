@@ -25,9 +25,14 @@ jobs:
       id: init
       run: terraform init
 
+    - name: terraform refresh
+      run: terraform refresh -parallelism=100 -compact-warnings
+      env:
+        GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
+
     - name: terraform destroy
       id: destroy
-      run: terraform destroy -auto-approve
+      run: terraform destroy -refresh=false -auto-approve
       env:
         GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
 
