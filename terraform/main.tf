@@ -51,6 +51,7 @@ curl https://github.com/${each.value}.keys > /home/ishocon/.ssh/authorized_keys
 curl https://github.com/Goryudyuma.keys >> /home/ishocon/.ssh/authorized_keys
 curl https://github.com/bgpat.keys >> /home/ishocon/.ssh/authorized_keys
 chown -R ishocon:ishocon /home/ishocon/.ssh
+useradd -u 1001 -g 1001 -o -N -d /home/ishocon -s /bin/bash ${each.value}
 EOF
 
   root_block_device {
