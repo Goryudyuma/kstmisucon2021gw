@@ -84,10 +84,12 @@ jobs:
           ## [${{ github.workflow }} #${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           <details>
           <summary>result</summary>
+
           ```hcl
           ${{ steps.plan.outputs.stdout }}
           ${{ steps.plan.outputs.stderr }}
           ```
+
           </details>
       if: ${{ steps.plan.outputs.exitcode != 0 }}
 
