@@ -6,12 +6,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - id: github_token
-      uses: tibdex/github-app-token@v1
-      with:
-        app_id: ${{ secrets.APP_ID }}
-        private_key: ${{ secrets.PRIVATE_KEY }}
-
     - uses: google-github-actions/setup-gcloud@master
       with:
         project_id: ${{ secrets.GOOGLE_PROJECT_ID }}
