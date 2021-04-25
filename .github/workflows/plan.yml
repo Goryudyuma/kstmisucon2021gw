@@ -1,0 +1,97 @@
+name: terraform plan
+on: pull_request
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+defaults:
+  run:
+    working-directory: terraform
+jobs:
+  plan:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: terraform version
+      id: terraform-version
+      run: echo "::set-output name=version::$(cat .terraform-version)"
+
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ steps.terraform-version.outputs.version }}
+
+    - name: terraform fmt
+      id: fmt
+      run: terraform fmt -check -recursive
+
+    - name: terraform init
+      id: init
+      run: terraform init
+
+    - name: terraform validate
+      id: validate
+      run: terraform validate -json
+
+    - name: comment validation errors
+      run: |
+        jq -nr '${{ steps.validate.outputs.stdout }}
+          | .diagnostics[]
+          | "::\(.severity) \({
+              file: .range.filename,
+              line: .range.start.line,
+              col: .range.start.column
+            } | [to_entries[] | "\(.key)=\(.value)"] | join(","))::\(
+              "\(.summary)\n\(.summary | gsub("."; "-"))\n\n\(.detail)"
+              | gsub("%"; "%25")
+              | gsub("\n"; "%0A")
+              | gsub("\r"; "%0D")
+            )"'
+      if: always()
+      continue-on-error: true
+
+    - name: terraform refresh
+      run: terraform refresh -parallelism=100 -compact-warnings
+      env:
+        GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
+      continue-on-error: true
+
+    - name: terraform plan
+      id: plan
+      run: terraform plan -no-color -detailed-exitcode -compact-warnings -refresh=false
+      env:
+        GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
+      continue-on-error: true
+
+    - name: add no changes label
+      uses: actions/github-script@v4
+      with:
+        script: |
+          const exitcode = ${{ steps.plan.outputs.exitcode }};
+          if (exitcode === 0) {
+            await github.issues.addLabels({ ...context.repo, issue_number: context.issue.number, labels: ['no changes'] }).catch(e => console.log(e));
+          } else {
+            await github.issues.removeLabel({ ...context.repo, issue_number: context.issue.number, name: 'no changes' }).catch(e => console.log(e));
+          }
+    - name: hide all bot comments
+      uses: kanga333/comment-hider@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: comment plan result
+      uses: KeisukeYamashita/create-comment@v1
+      with:
+        comment: |
+          ## [${{ github.workflow }} #${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          <details>
+          <summary>result</summary>
+
+          ```hcl
+          ${{ steps.plan.outputs.stdout }}
+          ${{ steps.plan.outputs.stderr }}
+          ```
+
+          </details>
+      if: ${{ steps.plan.outputs.exitcode != 0 }}
+
+    - name: check exitcode
+      run: "[ ${{ steps.plan.outputs.exitcode }} != 1 ]"

@@ -1,0 +1,54 @@
+name: terraform apply
+on:
+  push:
+    branches:
+    - master
+  workflow_dispatch:
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+defaults:
+  run:
+    working-directory: terraform
+jobs:
+  apply:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: terraform version
+      id: terraform-version
+      run: echo "::set-output name=version::$(cat .terraform-version)"
+
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ steps.terraform-version.outputs.version }}
+
+    - name: terraform init
+      id: init
+      run: terraform init
+
+    - name: terraform refresh
+      run: terraform refresh -parallelism=100 -compact-warnings
+      env:
+        GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
+
+    - name: terraform apply
+      id: apply
+      run: terraform apply -no-color -compact-warnings -refresh=false -auto-approve
+      env:
+        GITHUB_TOKEN: ${{ steps.github_token.outputs.token }}
+
+    - name: comment apply result
+      uses: peter-evans/commit-comment@v1
+      with:
+        body: |
+          ## [${{ github.workflow }} #${{ github.run_number }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          <details>
+          <summary>result</summary>
+          ```hcl
+          ${{ steps.apply.outputs.stdout }}
+          ${{ steps.apply.outputs.stderr }}
+          ```
+          </details>
+      if: always()

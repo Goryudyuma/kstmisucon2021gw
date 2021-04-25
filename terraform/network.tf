@@ -3,8 +3,8 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_subnet" "player_subnet" {
-  vpc_id = aws_vpc.vpc.id
-  cidr_block = "172.16.10.0/24"
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = "172.16.10.0/24"
   availability_zone = "ap-northeast-1a"
 
   map_public_ip_on_launch = true
@@ -15,7 +15,7 @@ resource "aws_main_route_table_association" "main_route_table" {
   route_table_id = aws_route_table.route_table.id
 }
 
-resource "aws_route_table" route_table {
+resource "aws_route_table" "route_table" {
   vpc_id = aws_vpc.vpc.id
 
   route {
