@@ -57,6 +57,8 @@ EOF
     volume_size = 30
   }
 
+  wait_for_fulfillment = true
+
   tags = {
     player_name = each.value
   }
