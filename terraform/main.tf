@@ -51,6 +51,8 @@ curl https://github.com/${each.value}.keys > /home/ishocon/.ssh/authorized_keys
 ${join("\n", [for admin in local.admins : "curl https://github.com/${admin}.keys >> /home/ishocon/.ssh/authorized_keys"])}
 chown -R ishocon:ishocon /home/ishocon/.ssh
 useradd -u 1001 -g 1001 -o -N -d /home/ishocon -s /bin/bash ${each.value}
+
+echo "./benchmark 2>&1 | grep \"Score:\" | sed -e 's/.*Score: \(\d*\)/\1/g' | xargs -I{} curl -X POST -d \"{\\\"score\\\":{}, \\\"timestamp\\\":{ \\\".sv\\\":\\\"timestamp\\\" } }\" \"https://kstmisucon2021gw-default-rtdb.firebaseio.com/teams/${each.value}.json\"" > /home/ishocon/benchmark_wrap.sh
 EOF
 
   root_block_device {
