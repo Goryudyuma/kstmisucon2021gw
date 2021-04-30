@@ -16,6 +16,6 @@ locals {
     "ritsuxis",
     "kitoriaaa",
     "bgpat",
-    
+    "Goryudyuma",
   ])
 }
