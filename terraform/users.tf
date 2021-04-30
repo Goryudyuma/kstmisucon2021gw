@@ -14,6 +14,7 @@ locals {
     "Noiri",
     "TOY-toranoko",
     "ritsuxis",
-    "kitoriaaa"
+    "kitoriaaa",
+    "bgpat",
   ])
 }
