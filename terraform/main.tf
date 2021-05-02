@@ -65,3 +65,10 @@ EOF
     player_name = each.value
   }
 }
+
+resource "aws_ec2_tag" "spot_instance" {
+  for_each    = aws_spot_instance_request.player
+  resource_id = each.value.spot_instance_id
+  key         = "player_name"
+  value       = each.key
+}
