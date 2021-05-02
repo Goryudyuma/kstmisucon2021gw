@@ -15,5 +15,6 @@ locals {
     "TOY-toranoko",
     "ritsuxis",
     "kitoriaaa",
+    "Goryudyuma",
   ])
 }
