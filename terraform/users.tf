@@ -16,6 +16,5 @@ locals {
     "ritsuxis",
     "kitoriaaa",
     "fono09",
-    "Goryudyuma",
   ])
 }
